@@ -13,4 +13,6 @@ public interface UserService {
     CommonResponse<?> login (LoginInputDTO dto);
 
     CommonResponse<?> listUsers();
+
+    CommonResponse<?> findById(Long id);
 }

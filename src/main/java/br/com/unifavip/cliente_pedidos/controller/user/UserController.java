@@ -2,9 +2,6 @@ package br.com.unifavip.cliente_pedidos.controller.user;
 
 import br.com.unifavip.cliente_pedidos.dto.user.input.LoginInputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.input.UserInputDTO;
-import br.com.unifavip.cliente_pedidos.dto.user.output.UserOutputDTO;
-import br.com.unifavip.cliente_pedidos.dto.user.output.auth.LoginOutputDTO;
-import br.com.unifavip.cliente_pedidos.models.user.User;
 import br.com.unifavip.cliente_pedidos.services.user.UserService;
 import br.com.unifavip.cliente_pedidos.utils.CommonResponse;
 import jakarta.validation.Valid;
@@ -33,9 +30,16 @@ public class UserController {
     }
 
     @GetMapping("/list")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_VIEW_ALL')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER_VIEW_ALL')")
     public ResponseEntity<?> findAll() {
         CommonResponse<?> user = userService.listUsers();
+        return ResponseEntity.status(user.getStatus()).body(user);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER_VIEW')")
+    public ResponseEntity<?> findById(@PathVariable("id") Long id) {
+        CommonResponse<?> user = userService.findById(id);
         return ResponseEntity.status(user.getStatus()).body(user);
     }
 }

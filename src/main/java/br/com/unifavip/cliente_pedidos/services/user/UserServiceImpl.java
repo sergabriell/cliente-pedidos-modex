@@ -103,9 +103,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public CommonResponse<?> listUsers() {
+        log.info("UserServiceImpl listUsers");
         List<User> users = userRepository.findAll();
         List<UserOutputDTO> usersOutput = users.stream().map(this::userToOutputDTO).toList();
         return ok(usersOutput);
+    }
+
+    @Override
+    public CommonResponse<?> findById(Long id) {
+        log.info("UserServiceImpl findById: {}", id);
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
+
+        return founded(userToOutputDTO(user));
     }
 
     private UserOutputDTO userToOutputDTO(User user) {
