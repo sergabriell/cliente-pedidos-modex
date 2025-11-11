@@ -5,13 +5,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Builder
+@SuperBuilder
 @Getter
 @Setter
 @NoArgsConstructor

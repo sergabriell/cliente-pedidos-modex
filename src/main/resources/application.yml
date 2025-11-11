@@ -12,3 +12,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+jwt:
+  secret: "1uHl4mT0NiOmCNosrSaFxl/OVoXkByH9WKfS+d3LVsI="
+  expiration: 3600000

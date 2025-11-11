@@ -3,10 +3,11 @@ package br.com.unifavip.cliente_pedidos.models.client;
 import br.com.unifavip.cliente_pedidos.models.commons.AbstractEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

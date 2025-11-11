@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.Hibernate;
 
 import java.util.HashSet;
@@ -14,7 +15,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_group")
@@ -36,7 +37,7 @@ public class UserGroup extends AbstractEntity {
     @Column(name = "observation")
     private String observation;
 
-    @OneToMany(mappedBy = "userGroup")
+    @OneToMany(mappedBy = "userGroup", fetch = FetchType.LAZY)
     private Set<User> users = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
