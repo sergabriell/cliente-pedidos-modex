@@ -1,5 +1,6 @@
 package br.com.unifavip.cliente_pedidos.services.user;
 
+import br.com.unifavip.cliente_pedidos.dto.user.input.FindByFilterUserInputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.input.LoginInputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.input.UserInputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.input.UserUpdateInputDTO;
@@ -14,10 +15,15 @@ import br.com.unifavip.cliente_pedidos.models.user.UserRole;
 import br.com.unifavip.cliente_pedidos.repository.user.UserGroupRepository;
 import br.com.unifavip.cliente_pedidos.repository.user.UserRepository;
 import br.com.unifavip.cliente_pedidos.services.user.jwt.TokenJWTService;
+import br.com.unifavip.cliente_pedidos.specifications.user.UserSpecification;
 import br.com.unifavip.cliente_pedidos.utils.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public CommonResponse<?> create(UserInputDTO dto) {
         try {
-            log.info("Creating new user {}", dto.getName());
+            log.info("UserServiceImpl Creating new user {}", dto.getName());
             userRepository.findByEmail(dto.getEmail())
                     .ifPresent(user -> {
                         throw new RuntimeException("E-mail já utilizado!");
@@ -76,7 +82,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public CommonResponse<?> update(UserUpdateInputDTO dto) {
         try {
-            log.info("Update user {}", dto.getName());
+            log.info("UserServiceImpl Update user {}", dto.getName());
             userRepository.findByEmail(dto.getEmail())
                     .filter(user -> !user.getId().equals(dto.getId()))
                     .ifPresent(user -> {
@@ -117,7 +123,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public CommonResponse<?> login(LoginInputDTO dto) {
         try {
-            log.info("Login email: {}", dto.getEmail());
+            log.info("UserServiceImpl login: {}", dto.getEmail());
             User user = userRepository.findByEmail(dto.getEmail())
                     .orElseThrow(() -> new RuntimeException("E-mail ou senha incorretos!"));
 
@@ -177,8 +183,39 @@ public class UserServiceImpl implements UserService {
         return ok(userToOutputDTO(user));
     }
 
+    @Override
+    public CommonResponse<?> findUserByFilter(FindByFilterUserInputDTO dto, Pageable pageable) {
+        log.info("UserServiceImpl findUserByFilter: {}", dto);
+        try {
+            Page<User> userPage = findByFilter(dto, pageable);
+            PageImpl<UserOutputDTO> userOutputDTOS = new PageImpl<>(
+                    userPage.stream()
+                            .filter(Objects::nonNull)
+                            .map(this::userToOutputDTO)
+                            .toList(), userPage.getPageable(), userPage.getTotalElements());
+
+            return founded(userOutputDTOS);
+        } catch (Exception e) {
+            return CommonResponse.convertThrowableToCommonResponse(e);
+        }
+    }
+
+    @Override
+    public Page<User> findByFilter(FindByFilterUserInputDTO dto, Pageable pageable) {
+        log.info("UserServiceImpl findByFilter: {}", dto);
+        Specification<User> specification = Specification.anyOf(
+                UserSpecification.idEquals(dto.getId()),
+                UserSpecification.emailLike(dto.getEmail()),
+                UserSpecification.nameLike(dto.getName()),
+                UserSpecification.statusEquals(dto.getStatus()),
+                UserSpecification.userGroupIdEquals(dto.getUserGroupId())
+        );
+
+        return userRepository.findAll(specification, pageable);
+    }
+
     private UserOutputDTO userToOutputDTO(User user) {
-        log.info("UserToOutputDTO: {}", user.getEmail());
+        log.info("UserServiceImpl UserToOutputDTO: {}", user.getEmail());
         UserOutputDTO userOutput = modelMapper.map(user, UserOutputDTO.class);
         UserGroupOutputDTO userGroupOutput = modelMapper.map(user.getUserGroup(), UserGroupOutputDTO.class);
         userGroupOutput.setRoles(

@@ -1,5 +1,6 @@
 package br.com.unifavip.cliente_pedidos.controller.user;
 
+import br.com.unifavip.cliente_pedidos.dto.user.input.FindByFilterUserInputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.input.LoginInputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.input.UserInputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.input.UserUpdateInputDTO;
@@ -7,10 +8,14 @@ import br.com.unifavip.cliente_pedidos.services.user.UserService;
 import br.com.unifavip.cliente_pedidos.utils.CommonResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import static org.springframework.data.domain.Sort.Direction.ASC;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,8 +44,9 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER_VIEW_ALL')")
-    public ResponseEntity<?> findAll() {
-        CommonResponse<?> user = userService.listUsers();
+    public ResponseEntity<?> findUserByFilter(@ModelAttribute FindByFilterUserInputDTO dto,
+                                              @PageableDefault(sort = {"id"}, direction = ASC) Pageable pageable) {
+        CommonResponse<?> user = userService.findUserByFilter(dto, pageable);
         return ResponseEntity.status(user.getStatus()).body(user);
     }
 
