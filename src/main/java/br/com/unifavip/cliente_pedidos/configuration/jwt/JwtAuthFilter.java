@@ -4,7 +4,7 @@ import br.com.unifavip.cliente_pedidos.dto.user.output.auth.AuthOutputDTO;
 import br.com.unifavip.cliente_pedidos.models.user.User;
 import br.com.unifavip.cliente_pedidos.models.user.UserRole;
 import br.com.unifavip.cliente_pedidos.repository.user.UserRepository;
-import br.com.unifavip.cliente_pedidos.services.user.TokenJWTService;
+import br.com.unifavip.cliente_pedidos.services.user.jwt.TokenJWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;

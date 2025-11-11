@@ -1,4 +1,4 @@
-package br.com.unifavip.cliente_pedidos.services.user;
+package br.com.unifavip.cliente_pedidos.services.user.jwt;
 
 import br.com.unifavip.cliente_pedidos.models.user.User;
 

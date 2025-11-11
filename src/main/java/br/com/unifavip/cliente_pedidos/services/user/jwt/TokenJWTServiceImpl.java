@@ -1,12 +1,10 @@
-package br.com.unifavip.cliente_pedidos.services.user;
+package br.com.unifavip.cliente_pedidos.services.user.jwt;
 
 import br.com.unifavip.cliente_pedidos.configuration.jwt.JwtProperties;
 import br.com.unifavip.cliente_pedidos.models.user.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;

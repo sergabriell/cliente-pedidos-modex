@@ -12,6 +12,7 @@ import br.com.unifavip.cliente_pedidos.models.user.UserGroup;
 import br.com.unifavip.cliente_pedidos.models.user.UserRole;
 import br.com.unifavip.cliente_pedidos.repository.user.UserGroupRepository;
 import br.com.unifavip.cliente_pedidos.repository.user.UserRepository;
+import br.com.unifavip.cliente_pedidos.services.user.jwt.TokenJWTService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
