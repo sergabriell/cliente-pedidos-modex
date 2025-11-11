@@ -17,20 +17,27 @@ public class InitialDataRolesLoader implements ApplicationRunner {
     private final UserRoleRepository userRoleRepository;
 
     private static final Map<String, String> ROLES_MAP = Map.ofEntries(
-            Map.entry("ORDER_CREATE", "Criar Pedido"),
-            Map.entry("ORDER_VIEW", "Visualizar Pedido"),
-            Map.entry("ORDER_EDIT", "Editar Pedido"),
-            Map.entry("ORDER_DELETE", "Excluir Pedido"),
+            Map.entry("ROLE_ORDER_CREATE", "Criar Pedido"),
+            Map.entry("ROLE_ORDER_VIEW", "Visualizar Pedido"),
+            Map.entry("ROLE_ORDER_EDIT", "Editar Pedido"),
+            Map.entry("ROLE_ORDER_DELETE", "Excluir Pedido"),
 
-            Map.entry("PRODUCT_CREATE", "Criar Produto"),
-            Map.entry("PRODUCT_VIEW", "Visualizar Produto"),
-            Map.entry("PRODUCT_EDIT", "Editar Produto"),
-            Map.entry("PRODUCT_DELETE", "Excluir Produto"),
+            Map.entry("ROLE_PRODUCT_CREATE", "Criar Produto"),
+            Map.entry("ROLE_PRODUCT_VIEW", "Visualizar Produto"),
+            Map.entry("ROLE_PRODUCT_EDIT", "Editar Produto"),
+            Map.entry("ROLE_PRODUCT_DELETE", "Excluir Produto"),
 
-            Map.entry("CLIENT_CREATE", "Criar Cliente"),
-            Map.entry("CLIENT_VIEW", "Visualizar Cliente"),
-            Map.entry("CLIENT_EDIT", "Editar Cliente"),
-            Map.entry("CLIENT_DELETE", "Excluir Cliente")
+            Map.entry("ROLE_CLIENT_CREATE", "Criar Cliente"),
+            Map.entry("ROLE_CLIENT_VIEW", "Visualizar Cliente"),
+            Map.entry("ROLE_CLIENT_EDIT", "Editar Cliente"),
+            Map.entry("ROLE_CLIENT_DELETE", "Excluir Cliente"),
+
+            Map.entry("ROLE_USER_VIEW", "Visualizar Usuario"),
+            Map.entry("ROLE_USER_VIEW_ALL", "Visualizar todos os Usuarios"),
+            Map.entry("ROLE_USER_EDIT", "Editar Usuario"),
+            Map.entry("ROLE_USER_DELETE", "Excluir Usuario"),
+
+            Map.entry("ROLE_ADMIN", "Administrador")
     );
 
     @Override

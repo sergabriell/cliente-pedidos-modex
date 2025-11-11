@@ -26,7 +26,6 @@ public class InitialDataGroupsLoader implements ApplicationRunner {
         createGroupAtendente();
     }
 
-
     private UserRole getRole(String name) {
         return userRoleRepository.findByNameIgnoreCase(name)
                 .orElseThrow(() -> new RuntimeException("Role não encontrada: " + name));
@@ -51,31 +50,37 @@ public class InitialDataGroupsLoader implements ApplicationRunner {
     }
 
     private void createGroupAdmin() {
-        createGroupWithRoles("Administrador", true, new HashSet<>(userRoleRepository.findAll()));
+        createGroupWithRoles("Administrador", true, Set.of(getRole("ROLE_ADMIN")));
     }
 
     private void createGroupEstoquista() {
         createGroupWithRoles("Estoquista", false, Set.of(
-                getRole("PRODUCT_CREATE"),
-                getRole("PRODUCT_VIEW"),
-                getRole("PRODUCT_EDIT"),
-                getRole("PRODUCT_DELETE")
+                getRole("ROLE_PRODUCT_CREATE"),
+                getRole("ROLE_PRODUCT_VIEW"),
+                getRole("ROLE_PRODUCT_EDIT"),
+                getRole("ROLE_PRODUCT_DELETE"),
+                getRole("ROLE_USER_VIEW"),
+                getRole("ROLE_USER_EDIT"),
+                getRole("ROLE_USER_DELETE")
         ));
     }
 
     private void createGroupAtendente() {
         createGroupWithRoles("Atendente", false, Set.of(
-                getRole("ORDER_CREATE"),
-                getRole("ORDER_VIEW"),
-                getRole("ORDER_EDIT"),
-                getRole("ORDER_DELETE"),
+                getRole("ROLE_ORDER_CREATE"),
+                getRole("ROLE_ORDER_VIEW"),
+                getRole("ROLE_ORDER_EDIT"),
+                getRole("ROLE_ORDER_DELETE"),
 
-                getRole("CLIENT_CREATE"),
-                getRole("CLIENT_VIEW"),
-                getRole("CLIENT_EDIT"),
-                getRole("CLIENT_DELETE"),
+                getRole("ROLE_CLIENT_CREATE"),
+                getRole("ROLE_CLIENT_VIEW"),
+                getRole("ROLE_CLIENT_EDIT"),
+                getRole("ROLE_CLIENT_DELETE"),
 
-                getRole("PRODUCT_VIEW")
+                getRole("ROLE_PRODUCT_VIEW"),
+                getRole("ROLE_USER_VIEW"),
+                getRole("ROLE_USER_EDIT"),
+                getRole("ROLE_USER_DELETE")
         ));
     }
 }

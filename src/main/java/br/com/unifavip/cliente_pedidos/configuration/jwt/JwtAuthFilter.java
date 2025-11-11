@@ -9,6 +9,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final TokenJWTService tokenService;
     private final UserRepository userRepository;
@@ -30,39 +32,44 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        try {
+            String authHeader = request.getHeader("Authorization");
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.replace("Bearer ", "");
-            String email = tokenService.validateToken(token);
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.replace("Bearer ", "");
+                String email = tokenService.validateToken(token);
 
-            if (email != null) {
-                User user = userRepository.findByEmail(email).get();
+                if (email != null) {
+                    User user = userRepository.findByEmail(email).get();
 
-                AuthOutputDTO userDTO = new AuthOutputDTO(
-                        user.getId(),
-                        user.getName(),
-                        user.getEmail(),
-                        user.getUserGroup().getName(),
-                        user.getUserGroup().getUserRoles().stream()
-                                .map(UserRole::getName)
-                                .collect(Collectors.toList())
-                );
+                    AuthOutputDTO userDTO = new AuthOutputDTO(
+                            user.getId(),
+                            user.getName(),
+                            user.getEmail(),
+                            user.getUserGroup().getName(),
+                            user.getUserGroup().getUserRoles().stream()
+                                    .map(UserRole::getName)
+                                    .collect(Collectors.toList())
+                    );
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userDTO,
-                                null,
-                                userDTO.getRoles().stream()
-                                        .map(SimpleGrantedAuthority::new)
-                                        .collect(Collectors.toList())
-                        );
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDTO,
+                                    null,
+                                    userDTO.getRoles().stream()
+                                            .map(SimpleGrantedAuthority::new)
+                                            .collect(Collectors.toList())
+                            );
 
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
             }
-        }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            log.error("Security exception message: {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
     }
 
     private String getToken(HttpServletRequest request) {

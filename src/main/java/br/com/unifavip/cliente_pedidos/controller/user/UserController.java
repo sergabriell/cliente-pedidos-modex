@@ -6,13 +6,13 @@ import br.com.unifavip.cliente_pedidos.dto.user.output.UserOutputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.output.auth.LoginOutputDTO;
 import br.com.unifavip.cliente_pedidos.models.user.User;
 import br.com.unifavip.cliente_pedidos.services.user.UserService;
+import br.com.unifavip.cliente_pedidos.utils.CommonResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,15 +20,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<UserOutputDTO> register(@RequestBody @Valid UserInputDTO dto) {
-        UserOutputDTO user = userService.create(dto);
-        return ResponseEntity.ok(user);
+    @PostMapping(path = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> register(@RequestBody @Valid UserInputDTO dto) {
+        CommonResponse<?> user = userService.create(dto);
+        return ResponseEntity.status(user.getStatus()).body(user);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginOutputDTO> login(@RequestBody LoginInputDTO dto) {
-        LoginOutputDTO user = userService.login(dto);
-        return ResponseEntity.ok(user);
+    @PostMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> login(@RequestBody LoginInputDTO dto) {
+        CommonResponse<?> user = userService.login(dto);
+        return ResponseEntity.status(user.getStatus()).body(user);
+    }
+
+    @GetMapping("/list")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER_VIEW_ALL')")
+    public ResponseEntity<?> findAll() {
+        CommonResponse<?> user = userService.listUsers();
+        return ResponseEntity.status(user.getStatus()).body(user);
     }
 }
