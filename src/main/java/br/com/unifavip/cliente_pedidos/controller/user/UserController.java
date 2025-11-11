@@ -2,6 +2,7 @@ package br.com.unifavip.cliente_pedidos.controller.user;
 
 import br.com.unifavip.cliente_pedidos.dto.user.input.LoginInputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.input.UserInputDTO;
+import br.com.unifavip.cliente_pedidos.dto.user.input.UserUpdateInputDTO;
 import br.com.unifavip.cliente_pedidos.services.user.UserService;
 import br.com.unifavip.cliente_pedidos.utils.CommonResponse;
 import jakarta.validation.Valid;
@@ -17,9 +18,16 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping(path = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> register(@RequestBody @Valid UserInputDTO dto) {
         CommonResponse<?> user = userService.create(dto);
+        return ResponseEntity.status(user.getStatus()).body(user);
+    }
+
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER_EDIT')")
+    public ResponseEntity<?> update(@RequestBody @Valid UserUpdateInputDTO dto) {
+        CommonResponse<?> user = userService.update(dto);
         return ResponseEntity.status(user.getStatus()).body(user);
     }
 
@@ -29,7 +37,7 @@ public class UserController {
         return ResponseEntity.status(user.getStatus()).body(user);
     }
 
-    @GetMapping("/list")
+    @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER_VIEW_ALL')")
     public ResponseEntity<?> findAll() {
         CommonResponse<?> user = userService.listUsers();
@@ -40,6 +48,13 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER_VIEW')")
     public ResponseEntity<?> findById(@PathVariable("id") Long id) {
         CommonResponse<?> user = userService.findById(id);
+        return ResponseEntity.status(user.getStatus()).body(user);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER_DELETE')")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        CommonResponse<?> user = userService.delete(id);
         return ResponseEntity.status(user.getStatus()).body(user);
     }
 }

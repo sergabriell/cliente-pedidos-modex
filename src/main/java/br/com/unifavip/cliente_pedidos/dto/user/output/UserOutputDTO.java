@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -18,4 +19,6 @@ public class UserOutputDTO implements Serializable {
     private String email;
     private boolean status;
     private UserGroupOutputDTO group;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
 }

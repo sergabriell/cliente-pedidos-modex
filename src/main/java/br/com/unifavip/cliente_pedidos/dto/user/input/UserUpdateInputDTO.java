@@ -1,6 +1,5 @@
 package br.com.unifavip.cliente_pedidos.dto.user.input;
 
-import br.com.unifavip.cliente_pedidos.models.user.UserGroup;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +12,10 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInputDTO implements Serializable {
+public class UserUpdateInputDTO implements Serializable {
+    @NotNull
+    private Long id;
+
     @NotBlank(message = "Nome obrigatório!")
     @Size(min = 2, message = "Nome deve conter no mínimo 2 Caracteres")
     private String name;
@@ -30,7 +32,7 @@ public class UserInputDTO implements Serializable {
     @Size(min = 6, message = "Senha deve conter no mínimo 6 Caracteres")
     private String password;
 
-    @NotNull
+    @NotNull(message = "Status obrigatório!")
     private boolean status;
 
     @NotNull(message = "Grupo obrigatório!")

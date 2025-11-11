@@ -2,6 +2,7 @@ package br.com.unifavip.cliente_pedidos.services.user;
 
 import br.com.unifavip.cliente_pedidos.dto.user.input.LoginInputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.input.UserInputDTO;
+import br.com.unifavip.cliente_pedidos.dto.user.input.UserUpdateInputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.output.UserOutputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.output.auth.AuthOutputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.output.auth.LoginOutputDTO;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static br.com.unifavip.cliente_pedidos.response.user.UserResponse.*;
@@ -45,7 +47,7 @@ public class UserServiceImpl implements UserService {
                     });
 
             UserGroup group = userGroupRepository.findById(dto.getUserGroupId())
-                    .orElseThrow(() -> new RuntimeException("UserGroup inválido"));//TODO exception de grupo não encontrado)
+                    .orElseThrow(() -> new RuntimeException("UserGroup inválido"));
 
             UserGroupOutputDTO groupOutput = modelMapper.map(group, UserGroupOutputDTO.class);
             groupOutput.setRoles(
@@ -72,6 +74,47 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public CommonResponse<?> update(UserUpdateInputDTO dto) {
+        try {
+            log.info("Update user {}", dto.getName());
+            userRepository.findByEmail(dto.getEmail())
+                    .filter(user -> !user.getId().equals(dto.getId()))
+                    .ifPresent(user -> {
+                        throw new RuntimeException("E-mail já utilizado!");
+                    });
+            UserGroup group = null;
+            UserGroupOutputDTO groupOutput = null;
+            if (Objects.nonNull(dto.getUserGroupId())) {
+                group = userGroupRepository.findById(dto.getUserGroupId())
+                        .orElseThrow(() -> new RuntimeException("UserGroup inválido"));
+
+                groupOutput = modelMapper.map(group, UserGroupOutputDTO.class);
+                groupOutput.setRoles(
+                        group.getUserRoles().stream()
+                                .map(userRole -> modelMapper.map(userRole, UserRolesOutputDTO.class))
+                                .collect(Collectors.toList())
+                );
+            }
+
+            User userById = userRepository.findById(dto.getId()).orElseThrow(() -> new RuntimeException("User not found"));
+            userById.setEmail(dto.getEmail());
+            if (dto.getPassword() != null) {
+                userById.setPassword(passwordEncoder.encode(dto.getPassword()));
+            }
+            userById.setStatus(dto.isStatus());
+            userById.setUserGroup(group);
+            userById.setName(dto.getName());
+
+            User save = userRepository.save(userById);
+            UserOutputDTO userOutput = modelMapper.map(save, UserOutputDTO.class);
+            userOutput.setGroup(groupOutput);
+            return updated(userOutput);
+        } catch (Exception e) {
+            return CommonResponse.convertThrowableToCommonResponse(e);
+        }
+    }
+
+    @Override
     public CommonResponse<?> login(LoginInputDTO dto) {
         try {
             log.info("Login email: {}", dto.getEmail());
@@ -80,6 +123,13 @@ public class UserServiceImpl implements UserService {
 
             if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
                 throw new RuntimeException("E-mail ou senha incorretos!");
+            }
+            if (!user.isStatus()) {
+                if (user.getUserGroup().isAdmin()) {
+                    throw new RuntimeException("Admin desativado. Contacte o suporte.");
+                } else {
+                    throw new RuntimeException("Seu usuário está desativado. Contacte um administrador!");
+                }
             }
 
             AuthOutputDTO userDTO = new AuthOutputDTO(
@@ -115,6 +165,16 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
 
         return founded(userToOutputDTO(user));
+    }
+
+    @Override
+    public CommonResponse<?> delete(Long id) {
+        log.info("UserServiceImpl delete: {}", id);
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
+
+        user.setStatus(false);
+        userRepository.save(user);
+        return ok(userToOutputDTO(user));
     }
 
     private UserOutputDTO userToOutputDTO(User user) {

@@ -1,6 +1,8 @@
 package br.com.unifavip.cliente_pedidos.configuration;
 
 import br.com.unifavip.cliente_pedidos.configuration.jwt.JwtAuthFilter;
+import br.com.unifavip.cliente_pedidos.errorHandler.CustomAccessDeniedHandler;
+import br.com.unifavip.cliente_pedidos.errorHandler.CustomAuthEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,9 +21,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSpringSecurityConfig {
 
     private final JwtAuthFilter jwtAuthorizationFilter;
+    private final CustomAuthEntryPoint customAuthEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http.exceptionHandling(exception ->
+                exception
+                        .authenticationEntryPoint(customAuthEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
+        );
 
         http
                 .csrf(csrf -> csrf.disable())
@@ -34,8 +45,6 @@ public class WebSpringSecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
-
-        http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

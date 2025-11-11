@@ -1,6 +1,7 @@
 package br.com.unifavip.cliente_pedidos.configuration.jwt;
 
 import br.com.unifavip.cliente_pedidos.dto.user.output.auth.AuthOutputDTO;
+import br.com.unifavip.cliente_pedidos.errorHandler.RestExceptionHandler;
 import br.com.unifavip.cliente_pedidos.models.user.User;
 import br.com.unifavip.cliente_pedidos.models.user.UserRole;
 import br.com.unifavip.cliente_pedidos.repository.user.UserRepository;
@@ -14,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -32,7 +34,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        try {
             String authHeader = request.getHeader("Authorization");
 
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -64,12 +65,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
-
             filterChain.doFilter(request, response);
-        } catch (Exception e) {
-            log.error("Security exception message: {}", e.getMessage());
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        }
     }
 
     private String getToken(HttpServletRequest request) {
