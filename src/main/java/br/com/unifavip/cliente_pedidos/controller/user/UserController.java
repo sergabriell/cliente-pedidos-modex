@@ -30,7 +30,7 @@ public class UserController {
     }
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER_EDIT')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or (hasAuthority('ROLE_USER_EDIT') and authentication.principal.id == #id)")
     public ResponseEntity<?> update(@RequestBody @Valid UserUpdateInputDTO dto) {
         CommonResponse<?> user = userService.update(dto);
         return ResponseEntity.status(user.getStatus()).body(user);
@@ -51,14 +51,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER_VIEW')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or (hasAuthority('ROLE_USER_VIEW') and authentication.principal.id == #id)")
     public ResponseEntity<?> findById(@PathVariable("id") Long id) {
         CommonResponse<?> user = userService.findById(id);
         return ResponseEntity.status(user.getStatus()).body(user);
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER_DELETE')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN') or (hasAuthority('ROLE_USER_DELETE') and authentication.principal.id == #id)")
     public ResponseEntity<?> delete(@PathVariable("id") Long id) {
         CommonResponse<?> user = userService.delete(id);
         return ResponseEntity.status(user.getStatus()).body(user);
