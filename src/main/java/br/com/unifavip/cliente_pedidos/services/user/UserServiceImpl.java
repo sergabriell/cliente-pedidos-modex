@@ -203,7 +203,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Page<User> findByFilter(FindByFilterUserInputDTO dto, Pageable pageable) {
         log.info("UserServiceImpl findByFilter: {}", dto);
-        Specification<User> specification = Specification.anyOf(
+        Specification<User> specification = Specification.allOf(
                 UserSpecification.idEquals(dto.getId()),
                 UserSpecification.emailLike(dto.getEmail()),
                 UserSpecification.nameLike(dto.getName()),

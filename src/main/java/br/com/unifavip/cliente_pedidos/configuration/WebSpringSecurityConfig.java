@@ -39,7 +39,7 @@ public class WebSpringSecurityConfig {
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/v1/user/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/user/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/v1/user").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
