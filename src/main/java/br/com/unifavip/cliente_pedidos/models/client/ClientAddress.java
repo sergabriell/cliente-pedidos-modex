@@ -41,6 +41,10 @@ public class ClientAddress extends AbstractEntity {
     @Column(name = "country")
     private String country;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "client_id")
+    private Client client;
+
     @PreUpdate
     @PrePersist
     public void preSave() {

@@ -1,4 +1,4 @@
-package br.com.unifavip.cliente_pedidos.dto.user.input;
+package br.com.unifavip.cliente_pedidos.dto.client.input;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,14 +11,10 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FindByFilterUserInputDTO implements Serializable {
+public class FindByFilterClientInputDTO implements Serializable {
     private Long id;
 
     private String name;
 
-    private String email;
-
-    private Boolean status;
-
-    private Long userGroupId;
+    private String cpf;
 }
