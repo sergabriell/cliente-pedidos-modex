@@ -1,9 +1,7 @@
 package br.com.unifavip.cliente_pedidos.dto.client.input;
 
-import br.com.unifavip.cliente_pedidos.models.client.ClientAddress;
-import br.com.unifavip.cliente_pedidos.models.order.Order;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +16,10 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ClientInputDTO implements Serializable {
+public class ClientUpdateInputDTO implements Serializable {
+    @NotNull(message = "Id obrigatório!")
+    private Long id;
+
     @NotBlank(message = "Nome obrigatório!")
     @Size(min = 2, message = "Nome deve conter no mínimo 2 Caracteres")
     private String name;
@@ -30,5 +31,6 @@ public class ClientInputDTO implements Serializable {
     private Boolean status;
 
     private String telephone;
-    private List<ClientAddressInputDTO> addresses = new ArrayList<>();
+
+    private List<ClientAddressUpdateInputDTO> addresses = new ArrayList<>();
 }

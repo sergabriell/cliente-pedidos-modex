@@ -17,6 +17,7 @@ import br.com.unifavip.cliente_pedidos.repository.user.UserRepository;
 import br.com.unifavip.cliente_pedidos.services.user.jwt.TokenJWTService;
 import br.com.unifavip.cliente_pedidos.specifications.user.UserSpecification;
 import br.com.unifavip.cliente_pedidos.utils.CommonResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -92,7 +93,7 @@ public class UserServiceImpl implements UserService {
             UserGroupOutputDTO groupOutput = null;
             if (Objects.nonNull(dto.getUserGroupId())) {
                 group = userGroupRepository.findById(dto.getUserGroupId())
-                        .orElseThrow(() -> new RuntimeException("UserGroup inválido"));
+                        .orElseThrow(() -> new EntityNotFoundException("Grupo com ID " + dto.getUserGroupId() + " não encontrado"));
 
                 groupOutput = modelMapper.map(group, UserGroupOutputDTO.class);
                 groupOutput.setRoles(
@@ -102,7 +103,7 @@ public class UserServiceImpl implements UserService {
                 );
             }
 
-            User userById = userRepository.findById(dto.getId()).orElseThrow(() -> new RuntimeException("User not found"));
+            User userById = userRepository.findById(dto.getId()).orElseThrow(() -> new EntityNotFoundException("Usuário com ID " + dto.getId() + " não encontrado"));
             userById.setEmail(dto.getEmail());
             if (dto.getPassword() != null) {
                 userById.setPassword(passwordEncoder.encode(dto.getPassword()));

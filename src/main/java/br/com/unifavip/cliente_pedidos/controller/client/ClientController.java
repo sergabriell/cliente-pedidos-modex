@@ -1,6 +1,7 @@
 package br.com.unifavip.cliente_pedidos.controller.client;
 
 import br.com.unifavip.cliente_pedidos.dto.client.input.ClientInputDTO;
+import br.com.unifavip.cliente_pedidos.dto.client.input.ClientUpdateInputDTO;
 import br.com.unifavip.cliente_pedidos.dto.client.input.FindByFilterClientInputDTO;
 import br.com.unifavip.cliente_pedidos.services.client.ClientService;
 import br.com.unifavip.cliente_pedidos.utils.CommonResponse;
@@ -25,6 +26,13 @@ public class ClientController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> create(@RequestBody @Valid ClientInputDTO dto) {
         CommonResponse<?> client = clientService.create(dto);
+        return ResponseEntity.status(client.getStatus()).body(client);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT_UPDATE')")
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> update(@RequestBody @Valid ClientUpdateInputDTO dto) {
+        CommonResponse<?> client = clientService.update(dto);
         return ResponseEntity.status(client.getStatus()).body(client);
     }
 

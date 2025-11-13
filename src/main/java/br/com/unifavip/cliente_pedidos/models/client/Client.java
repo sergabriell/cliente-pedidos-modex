@@ -33,6 +33,9 @@ public class Client extends AbstractEntity {
     @Column(name = "telephone")
     private String telephone;
 
+    @Column(name = "status", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean status;
+
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ClientAddress> addresses = new ArrayList<>();
 

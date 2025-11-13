@@ -19,6 +19,7 @@ public class ClientOutputDTO implements Serializable {
     private String name;
     private String cpf;
     private String telephone;
+    private Boolean status;
     private List<ClientAddressOutputDTO> addresses = new ArrayList<>();
     private List<OrderOutputDTO> orders = new ArrayList<>();
 }
