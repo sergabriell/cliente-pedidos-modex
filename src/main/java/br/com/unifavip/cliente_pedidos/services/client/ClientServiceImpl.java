@@ -131,6 +131,18 @@ public class ClientServiceImpl implements ClientService {
         return clientRepository.findAll(specification, pageable);
     }
 
+    @Override
+    public CommonResponse<?> findById(Long id) {
+        log.info("ClientServiceImpl findById: {}", id);
+        try {
+            Client client = clientRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Client not found!"));
+
+            return founded(clientToOutputDTO(client));
+        } catch (Exception e) {
+            return CommonResponse.convertThrowableToCommonResponse(e);
+        }
+    }
+
     private ClientOutputDTO clientToOutputDTO(Client client) {
         log.info("ClientServiceImpl ClientToOutputDTO: {}", client.getCpf());
 

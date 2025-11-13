@@ -43,4 +43,11 @@ public class ClientController {
         CommonResponse<?> client = clientService.findClientByFilter(dto, pageable);
         return ResponseEntity.status(client.getStatus()).body(client);
     }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT_VIEW')")
+    public ResponseEntity<?> findById(@PathVariable("id") Long id) {
+        CommonResponse<?> client = clientService.findById(id);
+        return ResponseEntity.status(client.getStatus()).body(client);
+    }
 }
