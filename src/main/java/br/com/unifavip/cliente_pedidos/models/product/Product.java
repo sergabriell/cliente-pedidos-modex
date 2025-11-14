@@ -1,5 +1,6 @@
 package br.com.unifavip.cliente_pedidos.models.product;
 
+import br.com.unifavip.cliente_pedidos.dto.enums.product.Color;
 import br.com.unifavip.cliente_pedidos.models.commons.AbstractEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
@@ -34,4 +35,14 @@ public class Product extends AbstractEntity {
 
     @Column(name = "status", nullable = false)
     private Boolean status;
+
+    @Column(name = "size")
+    private Integer size;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "color")
+    private Color color;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 }

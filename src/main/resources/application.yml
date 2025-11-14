@@ -15,3 +15,7 @@ spring:
 jwt:
   secret: "1uHl4mT0NiOmCNosrSaFxl/OVoXkByH9WKfS+d3LVsI="
   expiration: 3600000
+app:
+  upload:
+    base-url: ${BASE_URL:http://localhost:8080/uploads/}
+    local-path: ${LOCAL_PATH:/opt/uploads/}
