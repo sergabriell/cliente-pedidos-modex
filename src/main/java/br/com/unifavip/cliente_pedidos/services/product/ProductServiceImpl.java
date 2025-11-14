@@ -9,6 +9,7 @@ import br.com.unifavip.cliente_pedidos.models.product.Product;
 import br.com.unifavip.cliente_pedidos.models.product.ProductType;
 import br.com.unifavip.cliente_pedidos.repository.product.ProductRepository;
 import br.com.unifavip.cliente_pedidos.repository.product.ProductTypeRepository;
+import br.com.unifavip.cliente_pedidos.services.file.FileStorageService;
 import br.com.unifavip.cliente_pedidos.specifications.product.ProductSpecification;
 import br.com.unifavip.cliente_pedidos.utils.CommonResponse;
 import br.com.unifavip.cliente_pedidos.utils.ValidateFileImgProduct;

@@ -1,4 +1,4 @@
-package br.com.unifavip.cliente_pedidos.services.product;
+package br.com.unifavip.cliente_pedidos.services.file;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
