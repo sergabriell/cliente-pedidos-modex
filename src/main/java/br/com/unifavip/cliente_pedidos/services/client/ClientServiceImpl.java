@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static br.com.unifavip.cliente_pedidos.response.client.ClientResponse.*;
+import static br.com.unifavip.cliente_pedidos.response.user.UserResponse.ok;
 
 @Slf4j
 @Service
@@ -125,10 +126,25 @@ public class ClientServiceImpl implements ClientService {
         Specification<Client> specification = Specification.allOf(
                 ClientSpecification.idEquals(dto.getId()),
                 ClientSpecification.cpfLike(dto.getCpf()),
-                ClientSpecification.nameLike(dto.getName())
+                ClientSpecification.nameLike(dto.getName()),
+                ClientSpecification.statusEquals(dto.getStatus())
         );
 
         return clientRepository.findAll(specification, pageable);
+    }
+
+    @Override
+    public CommonResponse<?> delete(Long id) {
+        log.info("ClientServiceImpl delete: {}", id);
+        try {
+            Client client = clientRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Client not found!"));
+
+            client.setStatus(false);
+            clientRepository.save(client);
+            return ok(clientToOutputDTO(client));
+        } catch (Exception e) {
+            return CommonResponse.convertThrowableToCommonResponse(e);
+        }
     }
 
     @Override

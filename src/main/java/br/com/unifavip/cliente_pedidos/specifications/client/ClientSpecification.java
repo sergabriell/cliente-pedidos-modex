@@ -15,6 +15,7 @@ public class ClientSpecification {
     private static final String FIELD_ID = "id";
     private static final String FIELD_NAME = "name";
     private static final String FIELD_CPF = "cpf";
+    private static final String FIELD_STATUS = "status";
 
     public static Specification<Client> idEquals(Long expression) {
         if (expression == null) {
@@ -45,6 +46,13 @@ public class ClientSpecification {
                 builder.like(builder.lower(root.get(FIELD_CPF)), builder.literal(expressionDecoded.trim().toLowerCase())),
                 builder.like(builder.lower(root.get(FIELD_CPF)),
                         contains(StringUtils.stripAccents(expressionDecoded.trim().toLowerCase()))));
+    }
+
+    public static Specification<Client> statusEquals(Boolean status) {
+        if (status == null) {
+            return null;
+        }
+        return (root, query, builder) -> builder.equal(root.get(FIELD_STATUS), status);
     }
 
     private static String contains(String expression) {

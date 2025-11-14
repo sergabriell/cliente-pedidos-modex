@@ -177,11 +177,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public CommonResponse<?> delete(Long id) {
         log.info("UserServiceImpl delete: {}", id);
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
+        try {
+            User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found!"));
 
-        user.setStatus(false);
-        userRepository.save(user);
-        return ok(userToOutputDTO(user));
+            user.setStatus(false);
+            userRepository.save(user);
+            return ok(userToOutputDTO(user));
+        } catch (Exception e) {
+            return CommonResponse.convertThrowableToCommonResponse(e);
+        }
     }
 
     @Override

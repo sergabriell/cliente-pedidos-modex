@@ -17,4 +17,6 @@ public class FindByFilterClientInputDTO implements Serializable {
     private String name;
 
     private String cpf;
+
+    private Boolean status;
 }

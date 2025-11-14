@@ -20,5 +20,7 @@ public interface ClientService {
 
     Page<Client> findByFilter(FindByFilterClientInputDTO dto, Pageable pageable);
 
+    CommonResponse<?> delete(Long id);
+
     CommonResponse<?> findById(Long id);
 }

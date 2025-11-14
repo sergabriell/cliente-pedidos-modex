@@ -50,4 +50,11 @@ public class ClientController {
         CommonResponse<?> client = clientService.findById(id);
         return ResponseEntity.status(client.getStatus()).body(client);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT_DELETE')")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        CommonResponse<?> client = clientService.delete(id);
+        return ResponseEntity.status(client.getStatus()).body(client);
+    }
 }
