@@ -44,6 +44,9 @@ public class Order extends AbstractEntity {
     @Column(nullable = false)
     private OrderStatus status;
 
+    @Column(nullable = false)
+    private Double totalPrice;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items;
 }

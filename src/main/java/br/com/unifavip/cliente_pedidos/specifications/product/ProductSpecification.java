@@ -22,8 +22,6 @@ public class ProductSpecification {
     private static final String FIELD_SIZE = "size";
     private static final String FIELD_COLOR = "color";
 
-    // =============== SIMPLE FIELDS ===============
-
     public static Specification<Product> idEquals(Long id) {
         if (id == null) return null;
         return (root, query, builder) -> builder.equal(root.get(FIELD_ID), id);
@@ -44,8 +42,6 @@ public class ProductSpecification {
         return (root, query, builder) -> builder.equal(root.get(FIELD_COLOR), color);
     }
 
-    // =============== DESCRIPTION (LIKE) ===============
-
     public static Specification<Product> descriptionLike(String expression) {
         if (expression == null) return null;
 
@@ -58,8 +54,6 @@ public class ProductSpecification {
                 builder.like(builder.lower(root.get(FIELD_DESCRIPTION)), contains(noAccents))
         );
     }
-
-    // =============== RANGE FILTERS ===============
 
     public static Specification<Product> priceBetween(Double min, Double max) {
         if (min == null && max == null) return null;
@@ -102,8 +96,6 @@ public class ProductSpecification {
             }
         };
     }
-
-    // =============== UTILS ===============
 
     private static String contains(String expression) {
         return MessageFormat.format("%{0}%", expression);

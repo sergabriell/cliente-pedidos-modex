@@ -1,9 +1,8 @@
-package br.com.unifavip.cliente_pedidos.dto.order.output;
+package br.com.unifavip.cliente_pedidos.dto.order.input;
 
-import br.com.unifavip.cliente_pedidos.dto.client.output.ClientOutputDTO;
 import br.com.unifavip.cliente_pedidos.dto.enums.order.OrderStatus;
 import br.com.unifavip.cliente_pedidos.dto.enums.order.PaymentType;
-import br.com.unifavip.cliente_pedidos.dto.user.output.UserOutputDTO;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,13 +15,17 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderOutputDTO implements Serializable {
+public class OrderUpdateInputDTO implements Serializable {
+    @NotNull
     private Long id;
+    @NotNull
+    private Long clientId;
+
     private String observation;
+    @NotNull
     private PaymentType paymentType;
+    @NotNull
     private OrderStatus status;
-    private UserOutputDTO createdBy;
-    private OrderClientOutputDTO client;
-    private Double totalPrice;
-    private List<OrderItemOutputDTO> items;
+    @NotNull
+    private List<OrderItemUpdateInputDTO> items;
 }

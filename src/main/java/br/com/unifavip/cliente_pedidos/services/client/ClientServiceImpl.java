@@ -33,7 +33,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static br.com.unifavip.cliente_pedidos.response.client.ClientResponse.*;
-import static br.com.unifavip.cliente_pedidos.response.user.UserResponse.ok;
 
 @Slf4j
 @Service
