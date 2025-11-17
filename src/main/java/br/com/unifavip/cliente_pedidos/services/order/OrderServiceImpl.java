@@ -10,6 +10,10 @@ import br.com.unifavip.cliente_pedidos.dto.product.output.ProductTypeOutputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.output.UserOutputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.output.auth.AuthOutputDTO;
 import br.com.unifavip.cliente_pedidos.dto.user.output.group.UserGroupOutputDTO;
+import br.com.unifavip.cliente_pedidos.exceptions.client.ClientNotFoundException;
+import br.com.unifavip.cliente_pedidos.exceptions.order.OrderNotFoundException;
+import br.com.unifavip.cliente_pedidos.exceptions.product.ProductNotFoundException;
+import br.com.unifavip.cliente_pedidos.exceptions.user.UserNotFoundException;
 import br.com.unifavip.cliente_pedidos.models.client.Client;
 import br.com.unifavip.cliente_pedidos.models.order.Order;
 import br.com.unifavip.cliente_pedidos.models.order.OrderItem;
@@ -58,39 +62,44 @@ public class OrderServiceImpl implements OrderService {
     public CommonResponse<?> create(OrderInputDTO dto) {
         log.info("OrderServiceImpl Create order {}", dto);
 
-        Order order = new Order();
+        try{
+            Order order = new Order();
 
-        Client client = clientRepository.findById(dto.getClientId())
-                .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado"));
+            Client client = clientRepository.findById(dto.getClientId())
+                    .orElseThrow(() -> new ClientNotFoundException(dto.getClientId()));
 
-        AuthOutputDTO userLogged = (AuthOutputDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            AuthOutputDTO userLogged = (AuthOutputDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        User user = userRepository.findById(userLogged.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Usuário criador não encontrado"));
+            User user = userRepository.findById(userLogged.getId())
+                    .orElseThrow(() -> new UserNotFoundException(userLogged.getId()));
 
-        order.setClient(client);
-        order.setCreatedBy(user);
-        order.setObservation(dto.getObservation());
-        order.setPaymentType(dto.getPaymentType());
-        order.setStatus(OrderStatus.CREATED);
+            order.setClient(client);
+            order.setCreatedBy(user);
+            order.setObservation(dto.getObservation());
+            order.setPaymentType(dto.getPaymentType());
+            order.setStatus(OrderStatus.CREATED);
 
-        List<OrderItem> items = new ArrayList<>();
+            List<OrderItem> items = new ArrayList<>();
 
-        if (dto.getItems() != null && !dto.getItems().isEmpty()) {
-            items = dto.getItems().stream().map(itemDto -> {
-                Product product = productRepository.findById(itemDto.getProductId())
-                        .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+            if (dto.getItems() != null && !dto.getItems().isEmpty()) {
+                items = dto.getItems().stream().map(itemDto -> {
+                    Product product = productRepository.findById(itemDto.getProductId())
+                            .orElseThrow(() -> new ProductNotFoundException(itemDto.getProductId()));
 
-                OrderItem orderItem = buildOrderItem(itemDto, product);
-                orderItem.setOrder(order);
-                return orderItem;
-            }).collect(Collectors.toList());
+                    OrderItem orderItem = buildOrderItem(itemDto, product);
+                    orderItem.setOrder(order);
+                    return orderItem;
+                }).collect(Collectors.toList());
+            }
+
+            order.setItems(items);
+            order.setTotalPrice(calculateOrderTotalPrice(items));
+            Order saved = orderRepository.save(order);
+            return created(orderToOutputDTO(saved));
         }
-
-        order.setItems(items);
-        order.setTotalPrice(calculateOrderTotalPrice(items));
-        Order saved = orderRepository.save(order);
-        return created(orderToOutputDTO(saved));
+        catch (Exception e){
+            return CommonResponse.convertThrowableToCommonResponse(e);
+        }
     }
 
     @Transactional
@@ -99,7 +108,7 @@ public class OrderServiceImpl implements OrderService {
         log.info("OrderServiceImpl Update order {}", dto);
 
         Order existing = orderRepository.findById(dto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Pedido não encontrado"));
+                .orElseThrow(() -> new OrderNotFoundException(dto.getId()));
 
         modelMapper.typeMap(OrderUpdateInputDTO.class, Order.class)
                 .addMappings(mapper -> mapper.skip(Order::setItems));
@@ -119,7 +128,7 @@ public class OrderServiceImpl implements OrderService {
                 items.clear();
                 dto.getItems().forEach(itemDto -> {
                     Product product = productRepository.findById(itemDto.getProductId())
-                            .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado"));
+                            .orElseThrow(() -> new ProductNotFoundException(itemDto.getId()));
 
                     OrderItem orderItem = buildOrderItem(itemDto, product, dto.getStatus());
                     orderItem.setOrder(existing);

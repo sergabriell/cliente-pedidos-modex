@@ -10,6 +10,7 @@ import br.com.unifavip.cliente_pedidos.dto.order.output.OrderItemOutputDTO;
 import br.com.unifavip.cliente_pedidos.dto.order.output.OrderOutputDTO;
 import br.com.unifavip.cliente_pedidos.dto.product.output.ProductOutputDTO;
 import br.com.unifavip.cliente_pedidos.dto.product.output.ProductTypeOutputDTO;
+import br.com.unifavip.cliente_pedidos.exceptions.client.ClientNotFoundException;
 import br.com.unifavip.cliente_pedidos.models.client.Client;
 import br.com.unifavip.cliente_pedidos.models.client.ClientAddress;
 import br.com.unifavip.cliente_pedidos.repository.client.ClientAddressRepository;
@@ -69,7 +70,7 @@ public class ClientServiceImpl implements ClientService {
         log.info("ClientServiceImpl Update client {}", dto);
 
         Client existingClient = clientRepository.findById(dto.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Cliente com ID " + dto.getId() + " não encontrado"));
+                .orElseThrow(() -> new ClientNotFoundException(dto.getId()));
 
         modelMapper.typeMap(ClientUpdateInputDTO.class, Client.class)
                 .addMappings(mapper -> mapper.skip(Client::setAddresses));
@@ -136,7 +137,7 @@ public class ClientServiceImpl implements ClientService {
     public CommonResponse<?> delete(Long id) {
         log.info("ClientServiceImpl delete: {}", id);
         try {
-            Client client = clientRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Client not found!"));
+            Client client = clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException(id));
 
             client.setStatus(false);
             clientRepository.save(client);
@@ -150,7 +151,7 @@ public class ClientServiceImpl implements ClientService {
     public CommonResponse<?> findById(Long id) {
         log.info("ClientServiceImpl findById: {}", id);
         try {
-            Client client = clientRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Client not found!"));
+            Client client = clientRepository.findById(id).orElseThrow(() -> new ClientNotFoundException(id));
 
             return founded(clientToOutputDTO(client));
         } catch (Exception e) {
