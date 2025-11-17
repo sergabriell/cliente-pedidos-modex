@@ -160,6 +160,8 @@ public class ClientServiceImpl implements ClientService {
 
     private ClientOutputDTO clientToOutputDTO(Client client) {
         log.info("ClientServiceImpl ClientToOutputDTO: {}", client.getCpf());
+        modelMapper.typeMap(Client.class, ClientOutputDTO.class)
+                .addMappings(mapper -> mapper.skip(ClientOutputDTO::setOrders));
 
         ClientOutputDTO clientOutput = modelMapper.map(client, ClientOutputDTO.class);
 
